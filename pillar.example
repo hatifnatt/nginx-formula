@@ -1,0 +1,248 @@
+nginx:
+  # version to install, by default is not set, latest available version will be installed
+  version: ''
+  # package to install, can be: string or list of strings or list of mappings `package: version`
+  #
+  #package:
+  #  - nginx
+  #  - nginx-module-geoip
+  #  - nginx-module-image-filter
+  #
+  #package:
+  #  - nginx: 1.14*
+  package: nginx
+  # top level configuration directoy main configuration file
+  # and all other config files will be saved relatively to this dir
+  conf_dir: /etc/nginx
+  # use official nginx repository https://nginx.org/en/linux_packages.html
+  # disabled by default
+  use_official_repo: false
+  # parameters for ngin system service
+  service:
+    name: nginx
+    # desired status after applying the formula
+    # possible values running / dead
+    status: running
+    # startup service during system boot
+    enable: true
+    # perform reload instead of restart
+    reload: true
+  main_config:
+    # name of main configuration file
+    name: nginx.conf
+    # custom template file for main config
+    # if source:
+    # - starts with 'salt://' it will be usead 'as is'
+    #   this way arbitrary template from salt file server can be used
+    # - is an absolute path i.e. '/opt/nginx-templates/mytemplate.jinja'
+    #   local (to minion) file will be used
+    # otherwise formula will search for template in `formula_root/templates/%source%`
+    # by default if no value provided
+    # `formula_root/templates/default/nginx.conf.jinja` will be used as main configuration template
+    source: ''
+    # configuration to pass to template file, `config` variable will be available inside template
+    config:
+      - user: www-data
+      - worker_processes: auto
+      - pid: /run/nginx.pid
+      - include: /etc/nginx/modules-enabled/*.conf
+      - events:
+          - worker_connections: 768
+      - http:
+          - sendfile: 'on'
+          - tcp_nopush: 'on'
+          - tcp_nodelay: 'on'
+          - keepalive_timeout: 65
+          - types_hash_max_size: 2048
+          - server_tokens: 'off'
+          - include: /etc/nginx/mime.types
+          - default_type: application/octet-stream
+          - ssl_protocols: TLSv1 TLSv1.1 TLSv1.2
+          - ssl_prefer_server_ciphers: 'on'
+          - access_log: /var/log/nginx/access.log
+          - error_log: /var/log/nginx/error.log
+          - include: 'conf.d/*.conf'
+  # how to deal with files that exist on the minion but are not present in the pillars
+  # true - remove unmanaged config files
+  # false - don't touch unmanaged files
+  configs_unmanaged_purge: true
+  # by filling data under `configs` key arbitary configuration files
+  # in subdirectories relative to `conf_dir` can be created
+  # IMPORTANT those config files will only be loaded if you include them in main config
+  # 'conf.d/*.conf' is included by default
+  #main_config:
+  #  config:
+  #    - include: 'custom/*.conf'
+  #    - http:
+  #      - include: 'conf.d/*.conf'
+  configs:
+    # subdirectory relative to `conf_dir` where config files will be placed
+    # will be created before config files
+    conf.d:
+      # configuration file name
+      # resulting file path will be %conf_dir%/conf.d/gzip.conf
+      gzip.conf:
+        # possible values present / absent
+        # if not specified 'present' will be assumed
+        ensure: present
+        # custom template file to use instead of default `formula_root/templates/default/generic.conf.jinja`
+        # optional parameter
+        source: ''
+        # configuration data to pass to template file
+        config:
+          - gzip: 'on'
+          - gzip_vary: 'on'
+          - gzip_proxied: any
+          - gzip_comp_level: 6
+          - gzip_min_length: 1024
+          - gzip_buffers: 16 8k
+          - gzip_http_version: 1.1
+          - gzip_types: |-
+                text/plain text/css text/javascript text/xml
+                application/json application/javascript application/xml application/xml+rss
+    # custom subdir for config file, same as `conf.d` above but with user provided name
+    # IMPORTANT do not forget to include it into main configuration with 'include: custom/*.conf;'
+    custom: {}
+  # how to deal with files that exist on the minion but are not present in the pillars
+  # true - remove unmanaged snippets
+  # false - don't touch unmanaged files
+  snippets_unmanaged_purge: false
+  # snippets are often repeated parts of configuration they are supposed to be included in other configs
+  # they are not included anywhere (i.e.in main config) by default
+  # IMPORTANT
+  # don't forget to include snippet in your config i.e. `include: 'snippets/acmesh_letsencrypt.conf'`
+  snippets:
+    acmesh_letsencrypt.conf:
+      # possible values present / absent
+      # if not specified 'present' will be assumed
+      ensure: present
+      # source: ''
+      config:
+        # with default 'generic' template you can add comments to configuration
+        - "# Common config for Let's Encrypt acme challenge"
+        - location /.well-known/acme-challenge/:
+          - alias: /var/www/le/.well-known/acme-challenge/
+    stub_status.conf:
+      ensure: present
+      config:
+        - location /stub_status:
+          # do not forget to put in quotes values that can be interpreted as boolean
+          # like 'on' / 'off', 'yes' / 'no' etc.
+          - stub_status: 'on'
+          - access_log: 'off'
+          - error_log: 'off'
+          - allow: '127.0.0.0/8'
+          - allow: '::1'
+          - deny: 'all'
+    # replicate snippet shipped in nginx package in Debian
+    fastcgi-php.conf:
+      config:
+        - "# regex to split $uri to $fastcgi_script_name and $fastcgi_path"
+        - fastcgi_split_path_info: '^(.+?\.php)(/.*)$'
+        - "# Check that the PHP script exists before passing it"
+        - try_files: $fastcgi_script_name =404
+        - "# Bypass the fact that try_files resets $fastcgi_path_info"
+        - "# see: http://trac.nginx.org/nginx/ticket/321"
+        - set: $path_info $fastcgi_path_info
+        - fastcgi_param: PATH_INFO $path_info
+        - fastcgi_index: index.php
+        - include: fastcgi.conf
+  # managed sites
+  ###############
+  # sites functionality is enabled by providing non empty values for
+  # `sites_available_dir` and `sites_enabled_dir` parameters
+  #
+  # by default it's enabled on Debian systems only and disabled on RedHat systems it can be enabled by
+  # providing non empty values for `sites_available_dir` and `sites_enabled_dir` parameters
+  # also you need to include configs from `sites_enabled_dir` into main config
+  # i.e. if `sites_enabled_dir: sites-enabled` part of your main config can look like this
+  #main_config:
+  #  config:
+  #      ...
+  #    - http:
+  #        ...
+  #      - include: 'sites-enabled/*'
+  #
+  # every site is a config file saved in `%conf_dir%/%sites_available_dir%`
+  # which by default is `/etc/nginx/sites-available`
+  # enabled configs will be symlinked to `%conf_dir%/%sites_enabled_dir%`
+  # which by default is  `/etc/nginx/sites-enabled`
+  # usually each of this config is a one `server {}` block but actually it can be any configutaion
+  #
+  # directory relative to `conf_dir` where config files will be saved
+  sites_available_dir: sites-available
+  # directory relative to `conf_dir` where symlinks to config files will be saved
+  # this directory must be included in main config somewhere
+  sites_enabled_dir: sites-enabled
+  # how to deal with sites that exist on the minion but are not present in the pillars
+  # disable - remove unmanaged sites symlinks form sites_enabled_dir
+  # purge - remove unmanaged sites symlinks form sites_enabled_dir and also remove files from sites_available_dir
+  # none (default value) - don't touch unmanaged files
+  sites_unmanaged: none
+  #sites_unmanaged: disable
+  #sites_unmanaged: purge
+  sites:
+    # site name, also will be used as config filename
+    default:
+      # possible values present / absent
+      # if not specified 'present' will be assumed
+      ensure: present
+      # enable site by creating symlink in `sites_enabled_dir`
+      # if not specified 'true' will be assumed
+      enable: true
+      # custom template file, optional, if not present or empty generic template will be used
+      source: ''
+      # with generic template expected configuration data is a list of dictionaries (to preserver order of parameters)
+      # if dictionary value is another list of dictionaries new context block {} will be started
+      # with dictionary key as name
+      # if dictionary value is a list, each item in list will written to config prepended with dictionary key as name
+      config:
+      # rendered configuration
+      # server {
+      #     listen 80 default_server;
+      #     listen [::]:80 default_server;
+      #     root /var/www/html;
+      #     index index.html index.htm index.nginx-debian.html;
+      #     server_name _;
+      #
+      #     location / {
+      #         try_files $uri $uri/ =404;
+      #     }
+      #     include snippets/stub_status.conf;
+      # }
+      #
+        - server:
+          - listen: 80 default_server
+          - listen: '[::]:80 default_server'
+          - root: /var/www/html
+          - index: index.html index.htm index.nginx-debian.html
+          - server_name: _
+          - location /:
+            - try_files: '$uri $uri/ =404'
+          - include: snippets/stub_status.conf
+        #
+        # slightly different variant
+        - server:
+          - listen:
+            - '80 default_server'
+            - '[::]:80 default_server'
+          - root: /var/www/html
+          - index: index.html index.htm index.nginx-debian.html
+          - server_name: _
+          - location /:
+            - try_files: '$uri $uri/ =404'
+          - include: snippets/stub_status.conf
+    # minimum required site definition, site config file will be created and enabled
+    # site name
+    basic_status:
+      # site configuration
+      config:
+        - server:
+          - server_name: localhost 127.0.0.1 [::1]
+          - listen:
+            - 8081
+            - '[::]:8081'
+          - root: /dev/null
+          - access_log: 'off'
+          - error_log: 'off'
+          - include: snippets/stub_status.conf

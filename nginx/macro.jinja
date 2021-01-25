@@ -1,0 +1,42 @@
+{% set tplroot = tplfile.split('/')[0] %}
+
+{%- macro dump_config(value, key='', ind=0, operator=' ', delim=';', lb='\n', ind_increment=4) -%}
+    {%- if value is number or value is string -%}
+        {%- if key and value -%}
+            {#- Add extra indentation for multiline values -#}
+            {%- set ind_extra = key|length + 1 -%}
+{{ key|indent(ind, True) }}{{ operator }}{{ value|string|indent(ind + ind_extra) }}{{ delim }}{{ lb }}
+        {%- else -%}
+{{ value|indent(ind, True) }}{{ lb }}
+        {%- endif -%}
+    {%- elif value is mapping -%}
+        {%- for k, v in value.items() -%}
+            {#- If var is dict or list of dicts create context block -#}
+            {%- if v is mapping or (v is iterable and v|length > 0 and v[0] is mapping)-%}
+{{ lb }}{{ k|indent(ind, True) }} {{ '{' }}
+{{ dump_config(v, '', ind + ind_increment) -}}
+{{ '}'|indent(ind, True) }}{{ lb }}
+            {%- else -%}
+{{ dump_config(v, k, ind) }}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- elif value is iterable -%}
+        {%- for v in value -%}
+{{ dump_config(v, key, ind) }}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{% macro build_source(source='', path_prefix='templates', default_source='', indent_width=6) -%}
+{% set url = '' -%}
+{% if source -%}
+    {%- if source.startswith('salt://') or source.startswith('/') %}
+        {%- set url = '- ' ~ source %}
+    {%- else %}
+        {%- set url = '- salt://' ~ tplroot ~ '/' ~ path_prefix ~ '/' ~ source %}
+    {%- endif %}
+{% else -%}
+    {%- set url = '- salt://' ~ tplroot ~ '/' ~ path_prefix ~ '/' ~ default_source %}
+{% endif -%}
+{{ url|indent(indent_width, True) }}
+{%- endmacro %}

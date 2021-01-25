@@ -1,0 +1,15 @@
+{% from tplroot ~ '/macro.jinja' import dump_config -%}
+
+# This file is managed by Salt.
+# Do not edit by hand
+{# If provided configuration is dictinary it's most probably unsorted or alphabetically sorted
+    try to put `load_module` and `include` parameters at the top of configuration file #}
+{% if 'load_module' in config -%}
+{{ dump_config(config.pop('load_module'), 'load_module') }}
+{% endif -%}
+
+{% if 'include' in config -%}
+{{ dump_config(config.pop('include'), 'include') }}
+{% endif -%}
+
+{{ dump_config(config) }}
