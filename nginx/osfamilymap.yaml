@@ -23,6 +23,11 @@ Debian:
           - error_log: /var/log/nginx/error.log
           - include: 'conf.d/*.conf'
           - include: 'sites-enabled/*'
+  tls:
+    packages:
+      - openssl
+      # backports repo required
+      - python3-m2crypto
   sites_available_dir: sites-available
   sites_enabled_dir: sites-enabled
 
@@ -51,5 +56,10 @@ RedHat:
           - include: /etc/nginx/mime.types
           - default_type: application/octet-stream
           - include: 'conf.d/*.conf'
+  tls:
+    packages:
+      - openssl
+      # epel repo required
+      - python3-m2crypto
   sites_available_dir: ''
   sites_enabled_dir: ''

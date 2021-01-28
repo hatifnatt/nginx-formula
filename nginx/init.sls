@@ -1,6 +1,7 @@
 include:
   - .repo
   - .install
+  - .certs
   - .snippets
   - .config
   - .sites

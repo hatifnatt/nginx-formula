@@ -40,3 +40,11 @@
 {% endif -%}
 {{ url|indent(indent_width, True) }}
 {%- endmacro %}
+
+{% macro format_kwargs(kwarg) %}
+  {%- filter indent(4) %}
+    {%- for k, v in kwarg|dictsort %}
+- {{ k }}: {{ v }}
+    {%- endfor %}
+  {%- endfilter %}
+{% endmacro %}

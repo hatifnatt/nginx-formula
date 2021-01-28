@@ -8,6 +8,7 @@
 * [nginx.repo](nginx.repo)
 * [nginx.install](nginx.install)
 * [nginx.prepare](nginx.prepare)
+* [nginx.certs](nginx.certs)
 * [nginx.snippets](nginx.snippets)
 * [nginx.config](nginx.config)
 * [nginx.sites](nginx.sites)
@@ -32,6 +33,10 @@
 ### nginx.prepare
 
 Вспомогательные стейт для настройки рабочего окружения
+
+### nginx.certs
+
+Стейт для управления сертификатами. Возможно использовать готовые сертификаты в виде файлов или данных из пилларов или же выпуск самоподписанных сертификатов.
 
 ### nginx.snippets
 

@@ -1,8 +1,30 @@
 ---
 # os: Debian
-Debian-10: {}
-Debian-9: {}
+Debian-10:
+  tls:
+    packages:
+      - openssl
+      # backports repo required
+      - python3-m2crypto
+
+Debian-9:
+  tls:
+    packages:
+      - openssl
+      # looks like Py3 package is not available
+      - python-m2crypto
 
 # os: CentOS
-CentOS Linux-8: {}
-CentOS Linux-7: {}
+CentOS Linux-8:
+  tls:
+    packages:
+      - openssl
+      # epel repo required
+      - python3-m2crypto
+
+CentOS Linux-7:
+  tls:
+    packages:
+      - openssl
+      # epel repo required
+      - python36-m2crypto

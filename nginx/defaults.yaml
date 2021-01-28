@@ -44,6 +44,12 @@ nginx:
           - access_log: /var/log/nginx/access.log
           - error_log: /var/log/nginx/error.log
           - include: 'conf.d/*.conf'
+  tls:
+    packages:
+      - openssl
+      - python3-m2crypto
+    certs_dir: /etc/nginx/certs
+    certs: {}
   configs_unmanaged_purge: false
   configs: {}
   snippets_unmanaged_purge: false

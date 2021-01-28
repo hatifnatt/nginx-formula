@@ -62,6 +62,55 @@ nginx:
           - access_log: /var/log/nginx/access.log
           - error_log: /var/log/nginx/error.log
           - include: 'conf.d/*.conf'
+  # certificates management
+  tls:
+    # packages required to issue self signed certificates
+    packages:
+      - openssl
+      - python3-m2crypto
+    # directory where private key and certificate files will be saved
+    certs_dir: /etc/nginx/certs
+    # dictionary with required certificates
+    certs:
+      # certificate name, it will be used as part of private key and certificate file names
+      # example.tld.key, example.tld.crt respectively
+      example.tld:
+        # present - manage file for provided key, certificate, or issue new self signed certificate
+        # absent - remove key and certificate files
+        # if omitted, 'present' is assumed
+        ensure: present
+        # source file for privte key
+        # if source:
+        # - starts with 'salt://' it will be usead 'as is'
+        #   this way arbitrary file from salt file server can be used
+        # - is an absolute path i.e. '/etc/pki/example.tld.key'
+        #   local (to minion) file will be used
+        # otherwise formula will search for file in `formula_root/certs/%key_source%`
+        key_source: ''
+        # source file for certificate, same rules as for key_source
+        cert_source: ''
+        # you can provide private key and certificate data directly in pillars
+        # data from pillars does have higher priority, if values for:
+        # key_source, key_content, cert_source, cert_content are present
+        # data from key_content and cert_content will be used
+        key_content: |
+            -----BEGIN RSA PRIVATE KEY-----
+            [Private key here]
+            -----END RSA PRIVATE KEY-----
+        cert_content: |
+            -----BEGIN CERTIFICATE-----
+            [Certificate here]
+            -----END CERTIFICATE-----
+        # parameters for self signed certificate, does have lowest priority
+        # key_source, key_content, cert_source, cert_content keys must be absent
+        # then cert_params value will have effect and self singned certificate will be issued
+        # almost any valid parameter of Salt x509 state can be used here
+        cert_params:
+          days_valid: 3650
+          CN: example.tld
+          # use minion id as a Common Name
+          # CN: {{ grains.id }}
+          subjectAltName: "DNS:example.tld,DNS:www.example.tld,IP:127.0.0.1"
   # how to deal with files that exist on the minion but are not present in the pillars
   # true - remove unmanaged config files
   # false - don't touch unmanaged files
@@ -246,3 +295,18 @@ nginx:
           - access_log: 'off'
           - error_log: 'off'
           - include: snippets/stub_status.conf
+    # ssl enabled site
+    example.tld:
+      config:
+        - server:
+          - listen:
+            - '80'
+            - '443 ssl'
+          # using formula managed key and cert
+          - ssl_certificate: /etc/nginx/certs/example.tld.crt
+          - ssl_certificate_key: /etc/nginx/certs/example.tld.key
+          - root: /var/www/html
+          - index: index.html index.htm
+          - server_name: example.tld www.example.tld
+          - location /:
+            - try_files: '$uri $uri/ =404'
