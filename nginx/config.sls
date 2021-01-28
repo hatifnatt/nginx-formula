@@ -4,6 +4,7 @@
 
 include:
   - .prepare
+  - .certs
   - .snippets
   - .check
   - .service

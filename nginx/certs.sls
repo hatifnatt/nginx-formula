@@ -79,11 +79,10 @@ nginx_selfsigned_tls_key_<{{ name }}>:
     - name: "{{ nginx.tls.certs_dir ~ '/' ~ key_name }}"
     - mode: 640
     - require:
+      - pkg: nginx_tls_prereq_packages
       - file: nginx_certs_dir
     - onchanges_in:
       - cmd: nginx_check_config
-    - require:
-      - pkg: nginx_tls_prereq_packages
     - watch_in:
       - service: nginx_service
 
@@ -94,6 +93,7 @@ nginx_selfsigned_tls_cert_<{{ name }}>:
     {{- format_kwargs(data.cert_params) }}
     - mode: 640
     - require:
+      - pkg: nginx_tls_prereq_packages
       - file: nginx_certs_dir
       - x509: nginx_selfsigned_tls_key_<{{ name }}>
     - onchanges_in:
