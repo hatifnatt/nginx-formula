@@ -69,6 +69,10 @@ nginx:
       - openssl
       - python3-m2crypto
     # directory where private key and certificate files will be saved
+    # if you have no certificates to manage you can set it to emty string
+    # and directory will not be created
+    # IMPORTANT if you set it to empty string while you have some
+    # certificates under 'certs' key - state will fail
     certs_dir: /etc/nginx/certs
     # dictionary with required certificates
     certs:

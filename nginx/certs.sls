@@ -10,10 +10,13 @@ include:
   - .check
   - .service
 
+{#  Create nginx:tls:certs_dir only if it's not empty string -#}
+{% if nginx|traverse('tls:certs_dir', '') -%}
 nginx_certs_dir:
   file.directory:
     - name: "{{ nginx.tls.certs_dir }}"
     - makedirs: true
+{% endif -%}
 
 {% for name, data in nginx.tls.certs|dictsort -%}
   {%- set key_name = name ~ '.key' %}
