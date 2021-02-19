@@ -13,6 +13,7 @@
 
 include:
   - .repo
+  - .check
   - .service
 
 nginx_pkg:
@@ -23,5 +24,7 @@ nginx_pkg:
     {% endif -%}
     - require:
       - sls: {{ tplroot }}.repo
+    - require_in:
+      - cmd: nginx_check_config
     - watch_in:
       - service: nginx_service
