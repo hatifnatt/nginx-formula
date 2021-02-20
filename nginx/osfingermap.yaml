@@ -28,3 +28,10 @@ CentOS Linux-7:
       - openssl
       # epel repo required
       - python36-m2crypto
+
+Red Hat Enterprise Linux Server-7:
+  tls:
+    packages:
+      - openssl
+      # epel repo required
+      - python36-m2crypto
