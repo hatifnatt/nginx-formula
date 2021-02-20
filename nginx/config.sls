@@ -66,8 +66,10 @@ nginx_config_<{{ config_subdir ~ '/' ~ name }}>:
       - service: nginx_service
         {%- endif %}
 
-        {#- Remove all unmanaged config files if enabled in pillars #}
-        {%- if nginx.configs_unmanaged_purge %}
+        {#- Remove all unmanaged config files if enabled in pillars
+            `loop.last` - render purge states only once after all
+            valid files are removed from `config_files` list #}
+        {%- if nginx.configs_unmanaged_purge and loop.last %}
           {%- for config in config_files %}
 nginx_unmanaged_config_<{{ config_subdir ~'/'~ config }}>_purge:
   file.absent:
