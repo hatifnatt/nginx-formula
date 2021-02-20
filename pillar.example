@@ -118,6 +118,20 @@ nginx:
   # how to deal with files that exist on the minion but are not present in the pillars
   # true - remove unmanaged config files
   # false - don't touch unmanaged files
+  # IMPORTANT!
+  # only files (not directories) in managed config subdirs will be processed and removed i.e.
+  # if your configuration is
+  # configs:
+  #   conf.d:
+  #     gzip.conf:
+  #       ensure: present
+  #       config:
+  #         - gzip: 'on'
+  # then unmanaged config file 'conf.d/foo.conf' will be deleted
+  # but directory 'conf.d/bar/' and all it content won't be removed
+  # subdirectories relative to `conf_dir` won't be removed either if they are removed from pillars
+  # i.e. if you remove `conf.d` from `configs` - directory will remain untouched with all it contents
+  # if you want to clean files from `conf.d` just remove all configs defined under this key
   configs_unmanaged_purge: false
   # by filling data under `configs` key arbitary configuration files
   # in subdirectories relative to `conf_dir` can be created
@@ -156,6 +170,13 @@ nginx:
     # custom subdir for config file, same as `conf.d` above but with user provided name
     # IMPORTANT do not forget to include it into main configuration with 'include: custom/*.conf;'
     custom: {}
+    # nested subdirs are also supported although must be used with care,
+    # because they can be created by this formula but can not be removed by it
+    # below configuration will create `%conf_dir%/custom/nested/my.conf` config file
+    custom/nested:
+      my.conf:
+        config:
+          - "# config from single comment"
   # how to deal with files that exist on the minion but are not present in the pillars
   # true - remove unmanaged snippets
   # false - don't touch unmanaged files
