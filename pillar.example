@@ -118,7 +118,7 @@ nginx:
   # how to deal with files that exist on the minion but are not present in the pillars
   # true - remove unmanaged config files
   # false - don't touch unmanaged files
-  configs_unmanaged_purge: true
+  configs_unmanaged_purge: false
   # by filling data under `configs` key arbitary configuration files
   # in subdirectories relative to `conf_dir` can be created
   # IMPORTANT those config files will only be loaded if you include them in main config
