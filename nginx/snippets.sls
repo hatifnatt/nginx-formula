@@ -21,6 +21,7 @@ nginx_snippets_dir:
 {% for snippet_name, snippet in nginx.snippets|dictsort -%}
   {%- set ensure = snippet.get('ensure', 'present') %}
   {%- set source = snippet.get('source', '') %}
+  {%- set snippet_path_prefix = snippet.get('path_prefix', nginx.lookup.get('path_prefix', 'templates')) %}
   {#- Remove managed snippet file name from all files list #}
   {%- if snippet_name in snippets_files %}
     {%- do snippets_files.remove(snippet_name) %}
@@ -32,7 +33,7 @@ nginx_snippet_<{{ snippet_name }}>:
     - absent
   {%- elif ensure == 'present' %}
     - managed
-    - source: {{ build_source(source, default_source='default/generic.conf.jinja') }}
+    - source: {{ build_source(source, path_prefix=snippet_path_prefix, default_source='default/generic.conf.jinja') }}
     - template: jinja
     - context:
         tplroot: {{ tplroot }}

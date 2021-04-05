@@ -9,10 +9,11 @@ include:
   - .check
   - .service
 
+{% set main_config_path_prefix = nginx.main_config.get('path_prefix', nginx.lookup.get('path_prefix', 'templates')) -%}
 nginx_main_config:
   file.managed:
     - name: "{{ nginx.conf_dir ~ '/' ~ nginx.main_config.name }}"
-    - source: {{ build_source(nginx.main_config.source, default_source='default/nginx.conf.jinja') }}
+    - source: {{ build_source(nginx.main_config.source, path_prefix=main_config_path_prefix, default_source='default/nginx.conf.jinja') }}
     - template: jinja
     - context:
         tplroot: {{ tplroot }}
@@ -45,6 +46,7 @@ nginx_config_subdir_<{{ config_subdir }}>:
       {%- if config %}
         {%- set ensure = config.get('ensure', 'present') %}
         {%- set source = config.get('source', '') %}
+        {%- set config_path_prefix = config.get('path_prefix', nginx.lookup.get('path_prefix', 'templates')) %}
 nginx_config_<{{ config_subdir ~ '/' ~ name }}>:
   file:
     - name: "{{ configs_path ~ '/' ~ name }}"
@@ -52,7 +54,7 @@ nginx_config_<{{ config_subdir ~ '/' ~ name }}>:
     - absent
         {%- elif ensure == 'present' %}
     - managed
-    - source: {{ build_source(source, default_source='default/generic.conf.jinja') }}
+    - source: {{ build_source(source, path_prefix=config_path_prefix, default_source='default/generic.conf.jinja') }}
     - template: jinja
     - context:
         tplroot: {{ tplroot }}

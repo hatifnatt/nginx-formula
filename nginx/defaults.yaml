@@ -1,4 +1,6 @@
 nginx:
+  lookup:
+    path_prefix: templates
   version: ''
   package: nginx
   # variants

@@ -1,4 +1,8 @@
 nginx:
+  # global defaults
+  lookup:
+    # where to search for source file / template, relative to formula root i.e. nginx/%path_prefix%/%source%
+    path_prefix: 'templates'
   # version to install, by default is not set, latest available version will be installed
   version: ''
   # package to install, can be: string or list of strings or list of mappings `package: version`
@@ -40,6 +44,10 @@ nginx:
     # by default if no value provided
     # `formula_root/templates/default/nginx.conf.jinja` will be used as main configuration template
     source: ''
+    # where to search for source file / template, relative to formula root i.e. nginx/%path_prefix%/%source%
+    # usually when `path_prefix` is defined you also need to define `source` otherwise default source template
+    # will be used `default/nginx.conf.jinja` - for main configuration file
+    path_prefix: 'templates'
     # configuration to pass to template file, `config` variable will be available inside template
     config:
       - user: www-data
@@ -155,6 +163,10 @@ nginx:
         # custom template file to use instead of default `formula_root/templates/default/generic.conf.jinja`
         # optional parameter
         source: ''
+        # where to search for source file / template, relative to formula root i.e. nginx/%path_prefix%/%source%
+        # usually when `path_prefix` is defined you also need to define `source` otherwise default source template
+        # will be used `default/generic.conf.jinja` - for generic configuration file
+        path_prefix: 'templates'
         # configuration data to pass to template file
         config:
           - gzip: 'on'
@@ -191,6 +203,10 @@ nginx:
       # if not specified 'present' will be assumed
       ensure: present
       # source: ''
+      # where to search for source file / template, relative to formula root i.e. nginx/%path_prefix%/%source%
+      # usually when `path_prefix` is defined you also need to define `source` otherwise default source template
+      # will be used `default/generic.conf.jinja` - for generic snippet file
+      # path_prefix: 'templates'
       config:
         # with default 'generic' template you can add comments to configuration
         - "# Common config for Let's Encrypt acme challenge"
