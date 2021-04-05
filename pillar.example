@@ -15,13 +15,13 @@ nginx:
   #package:
   #  - nginx: 1.14*
   package: nginx
-  # top level configuration directoy main configuration file
+  # top level configuration directory with main configuration file
   # and all other config files will be saved relatively to this dir
   conf_dir: /etc/nginx
   # use official nginx repository https://nginx.org/en/linux_packages.html
   # disabled by default
   use_official_repo: false
-  # parameters for ngin system service
+  # parameters for nginx system service
   service:
     name: nginx
     # desired status after applying the formula
@@ -36,7 +36,7 @@ nginx:
     name: nginx.conf
     # custom template file for main config
     # if source:
-    # - starts with 'salt://' it will be usead 'as is'
+    # - starts with 'salt://' it will be used 'as is'
     #   this way arbitrary template from salt file server can be used
     # - is an absolute path i.e. '/opt/nginx-templates/mytemplate.jinja'
     #   local (to minion) file will be used
@@ -77,7 +77,7 @@ nginx:
       - openssl
       - python3-m2crypto
     # directory where private key and certificate files will be saved
-    # if you have no certificates to manage you can set it to emty string
+    # if you have no certificates to manage you can set it to empty string
     # and directory will not be created
     # IMPORTANT if you set it to empty string while you have some
     # certificates under 'certs' key - state will fail
@@ -91,9 +91,9 @@ nginx:
         # absent - remove key and certificate files
         # if omitted, 'present' is assumed
         ensure: present
-        # source file for privte key
+        # source file for private key
         # if source:
-        # - starts with 'salt://' it will be usead 'as is'
+        # - starts with 'salt://' it will be used 'as is'
         #   this way arbitrary file from salt file server can be used
         # - is an absolute path i.e. '/etc/pki/example.tld.key'
         #   local (to minion) file will be used
@@ -115,7 +115,7 @@ nginx:
             -----END CERTIFICATE-----
         # parameters for self signed certificate, does have lowest priority
         # key_source, key_content, cert_source, cert_content keys must be absent
-        # then cert_params value will have effect and self singned certificate will be issued
+        # then cert_params value will have effect and self signed certificate will be issued
         # almost any valid parameter of Salt x509 state can be used here
         cert_params:
           days_valid: 3650
@@ -141,7 +141,7 @@ nginx:
   # i.e. if you remove `conf.d` from `configs` - directory will remain untouched with all it contents
   # if you want to clean files from `conf.d` just remove all configs defined under this key
   configs_unmanaged_purge: false
-  # by filling data under `configs` key arbitary configuration files
+  # by filling data under `configs` key arbitrary configuration files
   # in subdirectories relative to `conf_dir` can be created
   # IMPORTANT those config files will only be loaded if you include them in main config
   # 'conf.d/*.conf' is included by default
@@ -257,7 +257,7 @@ nginx:
   # which by default is `/etc/nginx/sites-available`
   # enabled configs will be symlinked to `%conf_dir%/%sites_enabled_dir%`
   # which by default is  `/etc/nginx/sites-enabled`
-  # usually each of this config is a one `server {}` block but actually it can be any configutaion
+  # usually each of this config is a one `server {}` block but actually it can be any configuration
   #
   # directory relative to `conf_dir` where config files will be saved
   sites_available_dir: sites-available
