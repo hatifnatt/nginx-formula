@@ -52,6 +52,10 @@ nginx_config_<{{ config_subdir ~ '/' ~ name }}>:
     - name: "{{ configs_path ~ '/' ~ name }}"
         {%- if ensure == 'absent' %}
     - absent
+    - onchanges_in:
+      - cmd: nginx_check_config
+    - watch_in:
+      - service: nginx_service
         {%- elif ensure == 'present' %}
     - managed
     - source: {{ build_source(source, path_prefix=config_path_prefix, default_source='default/generic.conf.jinja') }}
