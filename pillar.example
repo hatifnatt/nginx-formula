@@ -31,6 +31,36 @@ nginx:
     enable: true
     # perform reload instead of restart
     reload: true
+  # manage some SELinux parameters required for proper operation
+  # NOTE restart or reload of the nginx service will be performed on changes
+  # More info:  https://www.nginx.com/blog/using-nginx-plus-with-selinux/
+  selinux:
+    # manage or not limited set of selinux parameters with this formula
+    manage: false
+    # allows processes labeled with the httpd_t context (such as NGINX) to connect to limited set of ports
+    # you can find more info about it by running
+    # sesearch -A -s httpd_t -b httpd_can_network_relay
+    # and
+    # semanage port -l | grep http_port_t
+    # or
+    # semanage port -l | grep http_cache_port_t
+    # etc.
+    # NB this option is less permissive
+    httpd_can_network_relay: false
+    # allows processes labeled with the httpd_t context (such as NGINX) to connect to all
+    # TCP socket types that have the port_type attribute, to list them, run
+    # seinfo -aport_type -x
+    # you need setools installed - yum install setools-console
+    # NB this option is more permissive
+    httpd_can_network_connect: false
+    # allow to listen on non standart ports
+    # by adding ports to http_port_t policy
+    # default is empty list
+    listen_ports:
+        # single port i.e. 10808 or range of ports 10800-10900
+      - port: 10808
+        # tcp or udp, if not provided tcp will be used as default
+        protocol: tcp
   main_config:
     # name of main configuration file
     name: nginx.conf

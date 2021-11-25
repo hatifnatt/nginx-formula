@@ -21,6 +21,11 @@ nginx:
     enable: true
     # perform reload instead of restart
     reload: true
+  selinux:
+    manage: false
+    httpd_can_network_relay: false
+    httpd_can_network_connect: false
+    listen_ports: []
   main_config:
     name: nginx.conf
     source: ''

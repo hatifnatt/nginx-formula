@@ -7,6 +7,7 @@
 * [nginx](nginx)
 * [nginx.repo](nginx.repo)
 * [nginx.install](nginx.install)
+* [nginx.selinux](nginx.selinux)
 * [nginx.prepare](nginx.prepare)
 * [nginx.certs](nginx.certs)
 * [nginx.snippets](nginx.snippets)
@@ -29,6 +30,10 @@
 ### nginx.install
 
 Данный стейт отвечает за установку пакета `nginx` или пакетов из списка `nginx:package`
+
+### nginx.selinux
+
+Данный стейт отвечает за настройку SELinux на системах где это применимо. Настройка SELinux может быть необходима в случах если вы используете nginx как реверс прокси - для корректной работы необходимо разрешить `httpd_can_network_relay` или `httpd_can_network_connect`, а так же если требуется прослушивать какой-либо нестандартный порт, в этом случае добавьте нужные порты в список `nginx:selinxu:listen_ports`
 
 ### nginx.prepare
 

@@ -14,6 +14,7 @@
 include:
   - .repo
   - .check
+  - .selinux
   - .service
 
 nginx_pkg:
@@ -26,5 +27,6 @@ nginx_pkg:
       - sls: {{ tplroot }}.repo
     - require_in:
       - cmd: nginx_check_config
+      - sls: {{ tplroot }}.selinux
     - watch_in:
       - service: nginx_service
