@@ -6,6 +6,11 @@
 include:
   - .service
 
+{# Install packages required for SElinux policy management -#}
+nginx_selinux_prereq_packages:
+  pkg.installed:
+    - pkgs: {{ nginx.selinux.packages|tojson }}
+
 nginx_selinux_httpd_can_network_relay:
   selinux.boolean:
     - name: httpd_can_network_relay

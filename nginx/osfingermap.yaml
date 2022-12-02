@@ -16,6 +16,10 @@ Debian-9:
 
 # os: CentOS
 CentOS Linux-8:
+  selinux:
+    packages:
+      - policycoreutils
+      - policycoreutils-python-utils
   tls:
     packages:
       - openssl
@@ -23,6 +27,9 @@ CentOS Linux-8:
       - python3-m2crypto
 
 CentOS Linux-7:
+  selinux:
+    - policycoreutils
+    - policycoreutils-python
   tls:
     packages:
       - openssl
@@ -30,6 +37,9 @@ CentOS Linux-7:
       - python36-m2crypto
 
 Red Hat Enterprise Linux Server-7:
+  selinux:
+    - policycoreutils
+    - policycoreutils-python
   tls:
     packages:
       - openssl

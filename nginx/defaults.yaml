@@ -22,6 +22,9 @@ nginx:
     # perform reload instead of restart
     reload: true
   selinux:
+    packages:
+      - policycoreutils
+      - policycoreutils-python-utils
     manage: false
     httpd_can_network_relay: false
     httpd_can_network_connect: false
