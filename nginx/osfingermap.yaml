@@ -28,8 +28,9 @@ CentOS Linux-8:
 
 CentOS Linux-7:
   selinux:
-    - policycoreutils
-    - policycoreutils-python
+    packages:
+      - policycoreutils
+      - policycoreutils-python
   tls:
     packages:
       - openssl
@@ -38,8 +39,9 @@ CentOS Linux-7:
 
 Red Hat Enterprise Linux Server-7:
   selinux:
-    - policycoreutils
-    - policycoreutils-python
+    packages:
+      - policycoreutils
+      - policycoreutils-python
   tls:
     packages:
       - openssl
