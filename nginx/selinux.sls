@@ -16,6 +16,8 @@ nginx_selinux_httpd_can_network_relay:
     - name: httpd_can_network_relay
     - value: {{ nginx.selinux.httpd_can_network_relay }}
     - persist: true
+    - require:
+      - pkg: nginx_selinux_prereq_packages
     - watch_in:
       - service: nginx_service
 
@@ -24,6 +26,8 @@ nginx_selinux_httpd_can_network_connect:
     - name: httpd_can_network_connect
     - value: {{ nginx.selinux.httpd_can_network_connect }}
     - persist: true
+    - require:
+      - pkg: nginx_selinux_prereq_packages
     - watch_in:
       - service: nginx_service
 
@@ -36,6 +40,8 @@ nginx_selinux_allow_to_listen_on_port_{{ protocol }}/{{ port }}:
     - protocol: {{ protocol }}
     - port: {{ port }}
     - sel_type: http_port_t
+    - require:
+      - pkg: nginx_selinux_prereq_packages
     - watch_in:
       - service: nginx_service
     {%- endfor %}
