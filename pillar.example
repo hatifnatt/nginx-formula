@@ -168,6 +168,9 @@ nginx:
             -----BEGIN CERTIFICATE-----
             [Certificate here]
             -----END CERTIFICATE-----
+        # key and cert files mode 0400 by default
+        key_mode: 0400
+        cert_mode: 0400
         # parameters for self signed certificate, does have lowest priority
         # key_source, key_content, cert_source, cert_content keys must be absent
         # then cert_params value will have effect and self signed certificate will be issued

@@ -80,7 +80,7 @@ nginx_provided_tls_cert_<{{ name }}>:
 nginx_selfsigned_tls_key_<{{ name }}>:
   x509.private_key_managed:
     - name: "{{ nginx.tls.certs_dir ~ '/' ~ key_name }}"
-    - mode: 640
+    - mode: {{ data.get('key_mode', '0400') }}
     - require:
       - pkg: nginx_tls_prereq_packages
       - file: nginx_certs_dir
@@ -94,7 +94,7 @@ nginx_selfsigned_tls_cert_<{{ name }}>:
     - name: "{{ nginx.tls.certs_dir ~ '/' ~ cert_name }}"
     - signing_private_key: {{ nginx.tls.certs_dir ~ '/' ~ key_name }}
     {{- format_kwargs(data.cert_params) }}
-    - mode: 640
+    - mode: {{ data.get('cert_mode', '0400') }}
     - require:
       - pkg: nginx_tls_prereq_packages
       - file: nginx_certs_dir
