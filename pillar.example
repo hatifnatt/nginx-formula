@@ -1,4 +1,6 @@
 nginx:
+  # currently only affect repo states
+  install: true
   # global defaults
   lookup:
     # where to search for source file / template, relative to formula root i.e. nginx/%path_prefix%/%source%
@@ -20,7 +22,30 @@ nginx:
   conf_dir: /etc/nginx
   # use official nginx repository https://nginx.org/en/linux_packages.html
   # disabled by default
+  # when set to false repo configuration files will be removed
   use_official_repo: false
+  repo:
+    # Check osafamilymap.yaml for more examples
+    # List of packages to install before configuring nginx repository
+    # i.e. for Debian family
+    prerequisites:
+      - apt-transport-https
+      - ca-certificates
+      - debian-archive-keyring
+    # Repository configuration will be used as pkgrepo.managed parameters
+    config:
+      # i.e. for Debian family
+      # Key must be manually prepared as described in docs https://nginx.org/en/linux_packages.html#Debian
+      # curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor > nginx-archive-keyring.gpg
+      # Please match file basename in 'keyring' and in repo 'signed-by'
+      # Directory for keys is /usr/share/keyrings
+      keyring: salt://nginx/files/nginx-archive-keyring-573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62.gpg
+      name: >
+        deb [signed-by=/usr/share/keyrings/nginx-archive-keyring-573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62.gpg]
+        http://nginx.org/packages/{{ grains['os']|lower }} {{ grains['oscodename']|lower }} nginx"
+      file: /etc/apt/sources.list.d/nginx-official-{{ grains['oscodename']|lower }}.list
+      # key_url: https://nginx.org/keys/nginx_signing.key
+      clean_file: true
   # parameters for nginx system service
   service:
     name: nginx

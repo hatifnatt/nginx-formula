@@ -1,6 +1,26 @@
 ---
 # os: Debian
+Debian-12:
+  tls:
+    packages:
+      - openssl
+      - python3-m2crypto
+
+Debian-11:
+  tls:
+    packages:
+      - openssl
+      - python3-m2crypto
+
 Debian-10:
+  # Preserving legacy approach for Debian 10 without 'signed-by='
+  repo:
+    config:
+      humanname: nginx repo
+      name: deb http://nginx.org/packages/{{ grains['os']|lower }} {{ grains['oscodename']|lower }} nginx
+      file: /etc/apt/sources.list.d/nginx-official-{{ grains['oscodename']|lower }}.list
+      key_url: https://nginx.org/keys/nginx_signing.key
+      keyring: ''
   tls:
     packages:
       - openssl

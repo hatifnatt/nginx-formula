@@ -1,31 +1,53 @@
+<!-- omit in toc -->
 # nginx formula
 
 Формула для установки и настройки `nginx`.
 
-## Доступные стейты
+* [Доступные стейты](#доступные-стейты)
+  * [nginx](#nginx)
+  * [nginx.repo](#nginxrepo)
+  * [nginx.repo.install](#nginxrepoinstall)
+  * [nginx.repo.clean](#nginxrepoclean)
+  * [nginx.repo\_legacy](#nginxrepo_legacy)
+  * [nginx.install](#nginxinstall)
+  * [nginx.selinux](#nginxselinux)
+  * [nginx.prepare](#nginxprepare)
+  * [nginx.certs](#nginxcerts)
+  * [nginx.snippets](#nginxsnippets)
+  * [nginx.config](#nginxconfig)
+  * [nginx.sites](#nginxsites)
+  * [nginx.check](#nginxcheck)
+  * [nginx.service](#nginxservice)
 
-* [nginx](nginx)
-* [nginx.repo](nginx.repo)
-* [nginx.install](nginx.install)
-* [nginx.selinux](nginx.selinux)
-* [nginx.prepare](nginx.prepare)
-* [nginx.certs](nginx.certs)
-* [nginx.snippets](nginx.snippets)
-* [nginx.config](nginx.config)
-* [nginx.sites](nginx.sites)
-* [nginx.check](nginx.check)
-* [nginx.service](nginx.service)
+## Доступные стейты
 
 ### nginx
 
-Основной стейт выполнит все остальне стейты.
+Основной стейт выполнит все остальные стейты.
 
 ### nginx.repo
 
-Стейт для управления репозиторием, в зависимости от параметра `nginx:use_official_repo`:
+В зависимости от параметра `nginx:use_official_repo`:
+
+* `true` подключит официальный репозиторий, вызывает [nginx.repo.install](#nginxrepoinstall)
+* `false` (значение по умолчанию) удалит настроенный репозиторий, вызывает [nginx.repo.clean](#nginxrepoclean)
+
+### nginx.repo.install
+
+Стейт для настройки официального репозитория <https://nginx.org/en/linux_packages.html>
+
+### nginx.repo.clean
+
+Стейт для удаления файлов конфигурации репозитория.
+
+### nginx.repo_legacy
+
+Устаревший стейт для управления репозиторием, в зависимости от параметра `nginx:use_official_repo`:
 
 * `true` подключит официальный репозиторий
 * `false` (значение по умолчанию) удалит настроенный репозиторий
+
+Временно сохранен для совместимости
 
 ### nginx.install
 
@@ -33,7 +55,7 @@
 
 ### nginx.selinux
 
-Данный стейт отвечает за настройку SELinux на системах где это применимо. Настройка SELinux может быть необходима в случах если вы используете nginx как реверс прокси - для корректной работы необходимо разрешить `httpd_can_network_relay` или `httpd_can_network_connect`, а так же если требуется прослушивать какой-либо нестандартный порт, в этом случае добавьте нужные порты в список `nginx:selinxu:listen_ports`
+Данный стейт отвечает за настройку SELinux на системах где это применимо. Настройка SELinux может быть необходима в случах если вы используете nginx как реверс прокси - для корректной работы необходимо разрешить `httpd_can_network_relay` или `httpd_can_network_connect`, а так же если требуется прослушивать какой-либо нестандартный порт, в этом случае добавьте нужные порты в список `nginx:selinux:listen_ports`
 
 ### nginx.prepare
 
@@ -45,11 +67,11 @@
 
 ### nginx.snippets
 
-Стейт для управления сниппетами. Сниппеты - кусочки конфигурции, которые можно использовать многократно путем подключения их в других конфигурциях.
+Стейт для управления сниппетами. Сниппеты - кусочки конфигурации, которые можно использовать многократно путем подключения их в других конфигурациях.
 
 ### nginx.config
 
-Стейт для управления основным файлом конфигурации (обычно `nginx.conf`) и дополнительными конфигурциями вроде `conf.d/*.conf` или `custom/*.conf`
+Стейт для управления основным файлом конфигурации (обычно `nginx.conf`) и дополнительными конфигурациями вроде `conf.d/*.conf` или `custom/*.conf`
 
 ### nginx.sites
 

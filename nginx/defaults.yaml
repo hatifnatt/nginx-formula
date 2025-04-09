@@ -1,4 +1,6 @@
 nginx:
+  # currently only affect repo states
+  install: true
   lookup:
     path_prefix: templates
   version: ''

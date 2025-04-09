@@ -10,8 +10,8 @@ nginx_repo:
     - absent
     {%- endif %}
     - humanname: nginx repo
-    - name: deb http://nginx.org/packages/{{ grains['os'].lower() }} {{ grains['oscodename'].lower() }} nginx
-    - file: /etc/apt/sources.list.d/nginx-official-{{ grains['oscodename'].lower() }}.list
+    - name: deb http://nginx.org/packages/{{ grains['os']|lower }} {{ grains['oscodename']|lower }} nginx
+    - file: /etc/apt/sources.list.d/nginx-official-{{ grains['oscodename']|lower }}.list
     - key_url: https://nginx.org/keys/nginx_signing.key
 
 {% elif salt['grains.get']('os_family') == 'RedHat' -%}

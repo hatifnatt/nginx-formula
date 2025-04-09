@@ -1,5 +1,18 @@
 ---
 Debian:
+  repo:
+    prerequisites:
+      - apt-transport-https
+      - ca-certificates
+      - debian-archive-keyring
+    config:
+      keyring: salt://nginx/files/nginx-archive-keyring-573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62.gpg
+      name: >
+        deb [signed-by=/usr/share/keyrings/nginx-archive-keyring-573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62.gpg]
+        http://nginx.org/packages/{{ grains['os']|lower }} {{ grains['oscodename']|lower }} nginx
+      file: /etc/apt/sources.list.d/nginx-official-{{ grains['oscodename']|lower }}.list
+      # key_url: https://nginx.org/keys/nginx_signing.key
+      clean_file: true
   main_config:
     config:
       - user: www-data
@@ -32,6 +45,24 @@ Debian:
   sites_enabled_dir: sites-enabled
 
 RedHat:
+  repo:
+    prerequisites: []
+    config:
+      - name: nginx-stable
+      - humanname: nginx stable repo
+      - baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+      - gpgcheck: 1
+      - enabled: 1
+      - gpgkey: https://nginx.org/keys/nginx_signing.key
+      - module_hotfixes: true
+
+      - name: nginx-mainline
+      - humanname: nginx mainline repo
+      - baseurl: http://nginx.org/packages/mainline/centos/$releasever/$basearch/
+      - gpgcheck: 1
+      - enabled: 0
+      - gpgkey: https://nginx.org/keys/nginx_signing.key
+      - module_hotfixes: true
   main_config:
     config:
       - user: nginx
