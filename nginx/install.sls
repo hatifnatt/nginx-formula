@@ -12,10 +12,10 @@
 {% endif -%}
 
 include:
-  - .repo
-  - .check
-  - .selinux
-  - .service
+  - {{ tplroot }}.repo
+  - {{ tplroot }}.check
+  - {{ tplroot }}.selinux
+  - {{ tplroot }}.service
 
 nginx_pkg:
   pkg.installed:
